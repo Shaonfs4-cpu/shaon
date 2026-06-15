@@ -1,408 +1,712 @@
 /* ═══════════════════════════════════════════
-   SHORIFUL ISLAM SHAON — script.js
+   SHORIFUL ISLAM SHAON — NEON CYBERPUNK CSS
 ═══════════════════════════════════════════ */
 
-document.addEventListener('DOMContentLoaded', () => {
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
 
-  // ── 1. PEN / TABLET DRAWING ANIMATION ────────
-  (function initPenAnimation() {
-    const canvas = document.getElementById('particles-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let W, H;
+:root {
+  --neon-cyan:   #00f5ff;
+  --neon-pink:   #ff00ff;
+  --neon-purple: #8b00ff;
+  --neon-yellow: #ffe600;
+  --neon-green:  #00ff88;
+  --dark-bg:     #030712;
+  --dark-card:   #0d1117;
+  --dark-border: #1e293b;
+  --text-main:   #e2e8f0;
+  --text-dim:    #64748b;
+  --grid-color:  rgba(0,245,255,0.04);
+}
 
-    function resize() {
-      W = canvas.width  = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-      initStrokes();
-    }
-    window.addEventListener('resize', resize);
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    // ── Color palette: neon cyan, pink, purple, green ──
-    const PALETTE = [
-      { r: 0,   g: 245, b: 255 },  // cyan
-      { r: 255, g: 0,   b: 255 },  // pink
-      { r: 139, g: 0,   b: 255 },  // purple
-      { r: 0,   g: 255, b: 136 },  // green
-      { r: 255, g: 230, b: 0   },  // yellow
-    ];
+html { scroll-behavior: smooth; }
 
-    // ── Pen cursor object ──
-    let pen = { x: 0, y: 0, angle: -35, size: 28 };
+body {
+  background: var(--dark-bg);
+  color: var(--text-main);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 17px;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
 
-    // ── Stroke definitions ──
-    // Each stroke is a smooth bezier path across screen
-    // Generated dynamically so they cover full responsive canvas
-    let strokes = [];
-    const STROKE_COUNT = 7;
+/* ── GRID BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
 
-    function makeStrokePath() {
-      const pts = [];
-      const segs = 5 + Math.floor(Math.random() * 4);
-      for (let i = 0; i <= segs; i++) {
-        pts.push({
-          x: (Math.random() * 0.85 + 0.05) * W,
-          y: (Math.random() * 0.85 + 0.05) * H,
-        });
-      }
-      return pts;
-    }
+/* ── CANVAS ── */
+#particles-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+}
 
-    function initStrokes() {
-      strokes = [];
-      for (let i = 0; i < STROKE_COUNT; i++) {
-        const c = PALETTE[i % PALETTE.length];
-        strokes.push({
-          pts:      makeStrokePath(),
-          t:        Math.random(),          // 0..1 progress along path
-          speed:    0.0012 + Math.random() * 0.001,
-          color:    c,
-          width:    0.8 + Math.random() * 1.2,
-          alpha:    0.18 + Math.random() * 0.18,
-          drawn:    [],                     // array of {x,y} already drawn
-          maxLen:   120 + Math.floor(Math.random() * 180), // trail length in points
-          phase:    Math.random() * Math.PI * 2,
-          isPen:    i === 0,               // first stroke drives the pen cursor
-        });
-      }
-    }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--dark-bg); }
+::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 2px; }
 
-    // Catmull-Rom spline interpolation for smooth curves
-    function catmullRom(pts, t) {
-      const n   = pts.length - 1;
-      const idx = Math.floor(t * n);
-      const i0  = Math.max(0, idx - 1);
-      const i1  = idx;
-      const i2  = Math.min(n, idx + 1);
-      const i3  = Math.min(n, idx + 2);
-      const tt  = t * n - idx;
+/* ══════════════════════════════
+   NAV
+══════════════════════════════ */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 48px;
+  background: rgba(3,7,18,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0,245,255,0.1);
+  transition: padding 0.3s ease;
+}
+.navbar.scrolled { padding: 12px 48px; }
 
-      const p0 = pts[i0], p1 = pts[i1], p2 = pts[i2], p3 = pts[i3];
-      const tt2 = tt * tt, tt3 = tt2 * tt;
+.nav-logo {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 20px var(--neon-cyan);
+  letter-spacing: 0.15em;
+  text-decoration: none;
+}
+.nav-logo span { color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink); }
 
-      return {
-        x: 0.5 * ((2*p1.x) + (-p0.x+p2.x)*tt + (2*p0.x-5*p1.x+4*p2.x-p3.x)*tt2 + (-p0.x+3*p1.x-3*p2.x+p3.x)*tt3),
-        y: 0.5 * ((2*p1.y) + (-p0.y+p2.y)*tt + (2*p0.y-5*p1.y+4*p2.y-p3.y)*tt2 + (-p0.y+3*p1.y-3*p2.y+p3.y)*tt3),
-      };
-    }
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s ease;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan);
+  transition: width 0.3s ease;
+}
+.nav-links a:hover { color: var(--neon-cyan); }
+.nav-links a:hover::after { width: 100%; }
 
-    // Draw stylus / pen cursor at position
-    function drawPen(x, y, angle) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(angle * Math.PI / 180);
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+.nav-burger span {
+  display: block;
+  width: 24px; height: 2px;
+  background: var(--neon-cyan);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
 
-      const len = pen.size;
-      // pen body
-      ctx.beginPath();
-      ctx.moveTo(0, -len * 0.5);
-      ctx.lineTo(len * 0.18, len * 0.3);
-      ctx.lineTo(0, len * 0.5);
-      ctx.lineTo(-len * 0.18, len * 0.3);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(20,30,50,0.9)';
-      ctx.strokeStyle = 'rgba(0,245,255,0.8)';
-      ctx.lineWidth = 0.8;
-      ctx.fill();
-      ctx.stroke();
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
+#hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 48px 80px;
+  text-align: center;
+  overflow: hidden;
+}
 
-      // pen tip glow dot
-      ctx.beginPath();
-      ctx.arc(0, len * 0.5, 2.2, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0,245,255,1)';
-      ctx.shadowColor = 'rgba(0,245,255,1)';
-      ctx.shadowBlur = 8;
-      ctx.fill();
+.hero-glitch-line {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-pink), transparent);
+  animation: scanLine 4s linear infinite;
+  opacity: 0.6;
+}
+@keyframes scanLine {
+  0%   { top: 0; }
+  100% { top: 100%; }
+}
 
-      // neon accent stripe on pen
-      ctx.beginPath();
-      ctx.moveTo(-len * 0.06, -len * 0.3);
-      ctx.lineTo(-len * 0.06,  len * 0.1);
-      ctx.strokeStyle = 'rgba(0,245,255,0.5)';
-      ctx.lineWidth = 1;
-      ctx.shadowBlur = 0;
-      ctx.stroke();
+.hero-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--neon-cyan);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.3s forwards;
+}
+.hero-tag::before { content: '[ '; }
+.hero-tag::after  { content: ' ]'; }
 
-      ctx.restore();
-    }
+.hero-name {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: clamp(1.4rem, 5.5vw, 5.5rem);
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  color: #fff;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-shadow:
+    0 0 20px rgba(0,245,255,0.5),
+    0 0 60px rgba(0,245,255,0.2);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.7s ease 0.5s forwards;
+}
+.hero-name .accent { color: var(--neon-cyan); }
 
-    // Draw a glowing stroke trail
-    function drawTrail(stroke) {
-      const pts = stroke.drawn;
-      if (pts.length < 2) return;
-      const { r, g, b } = stroke.color;
+.hero-subtitle {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  background: linear-gradient(90deg, #f59e0b, #f97316, #fbbf24, #ef4444, #f59e0b);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldFlow 15s linear infinite, fadeUp 0.7s ease 0.7s both;
+  filter: drop-shadow(0 0 16px rgba(251,191,36,0.5)) drop-shadow(0 0 40px rgba(249,115,22,0.3));
+  margin-bottom: 24px;
+}
+@keyframes goldFlow {
+  0%   { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
 
-      // outer glow pass
-      ctx.beginPath();
-      ctx.moveTo(pts[0].x, pts[0].y);
-      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-      ctx.strokeStyle = `rgba(${r},${g},${b},${stroke.alpha * 0.35})`;
-      ctx.lineWidth = stroke.width * 5;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowColor = `rgba(${r},${g},${b},0.9)`;
-      ctx.shadowBlur = 14;
-      ctx.stroke();
+.hero-desc {
+  max-width: 560px;
+  margin: 0 auto 40px;
+  color: var(--text-dim);
+  font-size: 1rem;
+  line-height: 1.8;
+  opacity: 0;
+  animation: fadeUp 0.7s ease 0.9s forwards;
+}
 
-      // inner bright line
-      ctx.beginPath();
-      ctx.moveTo(pts[0].x, pts[0].y);
-      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-      ctx.strokeStyle = `rgba(${r},${g},${b},${stroke.alpha * 0.9})`;
-      ctx.lineWidth = stroke.width;
-      ctx.shadowBlur = 4;
-      ctx.stroke();
+.hero-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.7s ease 1.1s forwards;
+}
 
-      ctx.shadowBlur = 0;
-    }
+.btn-neon {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 14px 32px;
+  border-radius: 2px;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+.btn-neon.primary {
+  background: var(--neon-cyan);
+  color: var(--dark-bg);
+  box-shadow: 0 0 20px rgba(0,245,255,0.4), 0 0 60px rgba(0,245,255,0.15);
+}
+.btn-neon.primary:hover {
+  box-shadow: 0 0 40px rgba(0,245,255,0.7), 0 0 80px rgba(0,245,255,0.3);
+  transform: translateY(-2px);
+}
+.btn-neon.outline {
+  background: transparent;
+  color: var(--neon-pink);
+  border: 1px solid var(--neon-pink);
+  box-shadow: 0 0 16px rgba(255,0,255,0.2), inset 0 0 16px rgba(255,0,255,0.05);
+}
+.btn-neon.outline:hover {
+  background: rgba(255,0,255,0.1);
+  box-shadow: 0 0 32px rgba(255,0,255,0.5), inset 0 0 32px rgba(255,0,255,0.1);
+  transform: translateY(-2px);
+}
 
-    // Tiny sparkle dot at the drawing tip
-    function drawTip(x, y, color) {
-      const { r, g, b } = color;
-      ctx.beginPath();
-      ctx.arc(x, y, 2, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${r},${g},${b},0.9)`;
-      ctx.shadowColor = `rgba(${r},${g},${b},1)`;
-      ctx.shadowBlur = 10;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
+/* scroll indicator */
+.scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.4;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--neon-cyan);
+  animation: bounce 2s ease-in-out infinite;
+}
+.scroll-hint::after {
+  content: '';
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, var(--neon-cyan), transparent);
+}
+@keyframes bounce {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(6px); }
+}
 
-    // ── Floating ink drop particles ──
-    let inkDrops = [];
-    function spawnInkDrop(x, y, color) {
-      if (Math.random() > 0.04) return;
-      const { r, g, b } = color;
-      inkDrops.push({
-        x, y,
-        vx: (Math.random() - 0.5) * 1.2,
-        vy: (Math.random() - 0.5) * 1.2,
-        r:  Math.random() * 2 + 0.5,
-        alpha: 0.6,
-        color: `rgba(${r},${g},${b},`,
-      });
-    }
-    function updateInkDrops() {
-      inkDrops = inkDrops.filter(d => d.alpha > 0.02);
-      inkDrops.forEach(d => {
-        d.x += d.vx; d.y += d.vy;
-        d.alpha *= 0.96;
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = d.color + d.alpha + ')';
-        ctx.fill();
-      });
-    }
+/* ══════════════════════════════
+   SECTION BASE
+══════════════════════════════ */
+section {
+  position: relative;
+  z-index: 1;
+  padding: 100px 48px;
+}
 
-    // ── Grid dots (very subtle) ──
-    function drawGridDots() {
-      const step = Math.min(W, H) > 600 ? 60 : 40;
-      ctx.fillStyle = 'rgba(0,245,255,0.03)';
-      for (let x = step; x < W; x += step) {
-        for (let y = step; y < H; y += step) {
-          ctx.beginPath();
-          ctx.arc(x, y, 1, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-    }
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(0,245,255,0.25);
+}
+.section-line {
+  width: 60px; height: 2px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  margin: 14px auto 0;
+  box-shadow: 0 0 12px var(--neon-cyan);
+}
 
-    let frame = 0;
-    function loop() {
-      ctx.clearRect(0, 0, W, H);
-      drawGridDots();
+/* ══════════════════════════════
+   ABOUT
+══════════════════════════════ */
+#about { background: rgba(13,17,23,0.6); border-top: 1px solid rgba(0,245,255,0.06); border-bottom: 1px solid rgba(0,245,255,0.06); }
 
-      strokes.forEach((stroke, si) => {
-        // advance t
-        stroke.t += stroke.speed;
-        if (stroke.t > 1) {
-          stroke.t = 0;
-          stroke.pts = makeStrokePath();
-          stroke.drawn = [];
-        }
+.about-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 64px;
+  align-items: center;
+}
 
-        const pos = catmullRom(stroke.pts, stroke.t);
+.about-avatar-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.about-avatar-frame {
+  width: 280px; height: 280px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,245,255,0.3);
+  background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(255,0,255,0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,245,255,0.1), inset 0 0 40px rgba(0,245,255,0.03);
+}
+.about-avatar-frame::before, .about-avatar-frame::after {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  border-color: var(--neon-cyan);
+  border-style: solid;
+  z-index: 3;
+}
+.about-avatar-frame::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.about-avatar-frame::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
 
-        // push to drawn trail
-        stroke.drawn.push({ x: pos.x, y: pos.y });
-        if (stroke.drawn.length > stroke.maxLen) stroke.drawn.shift();
+/* Profile Photo Style */
+.profile-pic {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: inherit;
+  z-index: 1; 
+  opacity: 0.9;
+}
 
-        drawTrail(stroke);
-        drawTip(pos.x, pos.y, stroke.color);
-        spawnInkDrop(pos.x, pos.y, stroke.color);
+.avatar-scan {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  animation: avatarScan 3s linear infinite;
+  opacity: 0.6;
+  z-index: 2; /* Scan line chobir upor diye jabe */
+}
+@keyframes avatarScan {
+  0%   { top: 0; }
+  100% { top: 100%; }
+}
 
-        // first stroke drives pen cursor
-        if (stroke.isPen) {
-          // calculate angle from velocity
-          const prev = stroke.drawn[stroke.drawn.length - 2];
-          if (prev) {
-            const dx = pos.x - prev.x, dy = pos.y - prev.y;
-            pen.angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-          }
-          pen.x = pos.x;
-          pen.y = pos.y;
-        }
-      });
+.about-content p {
+  color: #94a3b8;
+  line-height: 1.9;
+  margin-bottom: 16px;
+}
+.about-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+.tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  padding: 6px 14px;
+  border-radius: 2px;
+  border: 1px solid;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.tag-cyan  { border-color: rgba(0,245,255,0.3); color: var(--neon-cyan); background: rgba(0,245,255,0.05); }
+.tag-pink  { border-color: rgba(255,0,255,0.3); color: var(--neon-pink); background: rgba(255,0,255,0.05); }
+.tag-green { border-color: rgba(0,255,136,0.3); color: var(--neon-green); background: rgba(0,255,136,0.05); }
 
-      updateInkDrops();
-      drawPen(pen.x, pen.y, pen.angle);
+/* ══════════════════════════════
+   STATS
+══════════════════════════════ */
+#stats { padding: 80px 48px; }
+.stats-grid {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+.stat-card {
+  border: 1px solid rgba(0,245,255,0.1);
+  border-radius: 4px;
+  padding: 40px 24px;
+  text-align: center;
+  background: rgba(13,17,23,0.8);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, transform 0.35s cubic-bezier(.22,.68,0,1.2);
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--glow-color, var(--neon-cyan)), transparent);
+  box-shadow: 0 0 16px var(--glow-color, var(--neon-cyan));
+}
+.stat-card:hover { border-color: var(--glow-color, var(--neon-cyan)); transform: translateY(-6px); }
+.stat-number {
+  font-family: 'Orbitron', monospace;
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.stat-label { color: var(--text-dim); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; }
 
-      frame++;
-      requestAnimationFrame(loop);
-    }
+/* ══════════════════════════════
+   SKILLS
+══════════════════════════════ */
+#skills { background: rgba(13,17,23,0.5); border-top: 1px solid rgba(0,245,255,0.06); border-bottom: 1px solid rgba(0,245,255,0.06); }
+.skills-grid {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+}
+.skill-card {
+  border: 1px solid rgba(0,245,255,0.08);
+  border-radius: 4px;
+  padding: 32px 16px;
+  text-align: center;
+  background: rgba(13,17,23,0.9);
+  cursor: default;
+  transition: all 0.35s cubic-bezier(.22,.68,0,1.2);
+  position: relative;
+  overflow: hidden;
+}
+.skill-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 100%, var(--skill-glow, rgba(0,245,255,0.08)) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.skill-card:hover { transform: translateY(-8px) scale(1.04); border-color: rgba(0,245,255,0.3); box-shadow: 0 0 30px rgba(0,245,255,0.1); }
+.skill-card:hover::after { opacity: 1; }
+.skill-card i { font-size: 3rem; display: block; margin-bottom: 12px; filter: drop-shadow(0 0 10px currentColor); }
+.skill-card span { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; }
 
-    resize();
-    loop();
-  })();
+/* ══════════════════════════════
+   PORTFOLIO
+══════════════════════════════ */
+#portfolio {}
+.portfolio-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 520px) { .portfolio-grid { grid-template-columns: 1fr; } }
 
-  // ── 2. TYPING EFFECT ──────────────────────────
-  (function initTyping() {
-    const el = document.getElementById('typed-text');
-    const cursor = document.getElementById('typed-cursor');
-    if (!el) return;
+.video-card {
+  border: 1px solid rgba(0,245,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(13,17,23,0.8);
+  transition: all 0.35s cubic-bezier(.22,.68,0,1.2);
+  position: relative;
+}
+.video-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.video-card:hover { border-color: rgba(0,245,255,0.3); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(0,245,255,0.08); }
+.video-card:hover::before { opacity: 1; }
+.video-card iframe { width: 100%; display: block; border: 0; }
+.video-badge {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  padding: 4px 12px;
+  border-radius: 2px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+.badge-cyan   { border-color: rgba(0,245,255,0.3); color: var(--neon-cyan); background: rgba(0,245,255,0.06); }
+.badge-purple { border-color: rgba(139,0,255,0.3); color: var(--neon-purple); background: rgba(139,0,255,0.06); }
+.badge-green  { border-color: rgba(0,255,136,0.3); color: var(--neon-green); background: rgba(0,255,136,0.06); }
 
-    const text = el.dataset.text || '';
-    let i = 0;
+.shorts-center { display: flex; justify-content: center; }
+.shorts-card { width: 100%; max-width: 290px; }
 
-    function type() {
-      if (i <= text.length) {
-        el.textContent = text.slice(0, i);
-        i++;
-        setTimeout(type, i === text.length ? 300 : 75);
-      } else {
-        // reveal subtitle + desc after typing done
-        document.querySelectorAll('.hero-after-type').forEach(el => {
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
-        });
-      }
-    }
-    setTimeout(type, 600);
-  })();
+/* ══════════════════════════════
+   DESIGN / BEHANCE
+══════════════════════════════ */
+#design { background: rgba(13,17,23,0.5); border-top: 1px solid rgba(0,245,255,0.06); border-bottom: 1px solid rgba(0,245,255,0.06); }
+.design-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+}
+.behance-card {
+  border: 1px solid rgba(0,245,255,0.08);
+  border-radius: 4px;
+  padding: 36px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  background: rgba(13,17,23,0.9);
+  transition: all 0.35s cubic-bezier(.22,.68,0,1.2);
+  position: relative;
+  overflow: hidden;
+}
+.behance-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 100%, rgba(0,245,255,0.08) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.behance-card:hover { border-color: var(--neon-cyan); transform: translateY(-6px); box-shadow: 0 0 30px rgba(0,245,255,0.1); }
+.behance-card:hover::before { opacity: 1; }
+.behance-card i { font-size: 2.5rem; color: var(--neon-cyan); filter: drop-shadow(0 0 12px var(--neon-cyan)); }
+.behance-card h3 { font-family: 'Orbitron', monospace; font-size: 0.75rem; font-weight: 700; color: #f1f5f9; letter-spacing: 0.1em; text-align: center; }
+.behance-card span { font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: var(--neon-cyan); letter-spacing: 0.05em; }
 
-  // ── 3. SCROLL REVEAL ──────────────────────────
-  (function initReveal() {
-    const items = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    items.forEach(el => io.observe(el));
-  })();
+/* ══════════════════════════════
+   CONTACT
+══════════════════════════════ */
+#contact { text-align: center; }
+.contact-sub {
+  color: var(--text-dim);
+  margin-bottom: 48px;
+  max-width: 480px;
+  margin-left: auto; margin-right: auto;
+}
+.social-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+.social-btn {
+  width: 60px; height: 60px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,245,255,0.15);
+  background: rgba(13,17,23,0.8);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim);
+  font-size: 1.3rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.social-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.social-btn:hover { transform: translateY(-4px) scale(1.08); color: #fff; }
+.social-btn.email:hover  { border-color: #ef4444; box-shadow: 0 0 24px rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); }
+.social-btn.wa:hover     { border-color: #22c55e; box-shadow: 0 0 24px rgba(34,197,94,0.4); background: rgba(34,197,94,0.1); }
+.social-btn.li:hover     { border-color: #3b82f6; box-shadow: 0 0 24px rgba(59,130,246,0.4); background: rgba(59,130,246,0.1); }
+.social-btn.fb:hover     { border-color: var(--neon-cyan); box-shadow: 0 0 24px rgba(0,245,255,0.4); background: rgba(0,245,255,0.1); }
 
-  // ── 4. COUNT UP ───────────────────────────────
-  (function initCountUp() {
-    const counters = document.querySelectorAll('[data-count]');
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        const el     = e.target;
-        const target = parseFloat(el.dataset.count);
-        const suffix = el.dataset.suffix || '';
-        const isFloat = target % 1 !== 0;
-        const duration = 1400;
-        const start = performance.now();
+/* ══════════════════════════════
+   FOOTER
+══════════════════════════════ */
+footer {
+  position: relative; z-index: 1;
+  padding: 24px 48px;
+  border-top: 1px solid rgba(0,245,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(3,7,18,0.95);
+}
+.footer-copy {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+.footer-copy span { color: var(--neon-cyan); }
+.footer-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--neon-green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.8); }
+}
 
-        function step(now) {
-          const progress = Math.min((now - start) / duration, 1);
-          const ease = 1 - Math.pow(1 - progress, 3);
-          const val  = isFloat
-            ? (ease * target).toFixed(1)
-            : Math.round(ease * target);
-          el.textContent = val + suffix;
-          if (progress < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-        io.unobserve(el);
-      });
-    }, { threshold: 0.5 });
-    counters.forEach(el => io.observe(el));
-  })();
+/* ══════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════ */
+.reveal        { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.22,.68,0,1.2); }
+.reveal-left   { opacity: 0; transform: translateX(-50px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.22,.68,0,1.2); }
+.reveal-right  { opacity: 0; transform: translateX(50px);  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.22,.68,0,1.2); }
+.reveal.visible, .reveal-left.visible, .reveal-right.visible { opacity: 1; transform: none; }
+.d1 { transition-delay: 0.1s; } .d2 { transition-delay: 0.2s; }
+.d3 { transition-delay: 0.3s; } .d4 { transition-delay: 0.4s; }
+.d5 { transition-delay: 0.5s; }
 
-  // ── 5. NAVBAR SCROLL ──────────────────────────
-  (function initNavbar() {
-    const navbar = document.querySelector('.navbar');
-    if (!navbar) return;
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 60);
-    }, { passive: true });
-  })();
+/* ══════════════════════════════
+   ANIMATIONS
+══════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-  // ── 6. MOBILE MENU ────────────────────────────
-  (function initMobileMenu() {
-    const burger = document.querySelector('.nav-burger');
-    const links  = document.querySelector('.nav-links');
-    if (!burger || !links) return;
-
-    burger.addEventListener('click', () => {
-      links.classList.toggle('open');
-      const spans = burger.querySelectorAll('span');
-      const isOpen = links.classList.contains('open');
-      spans[0].style.transform = isOpen ? 'rotate(45deg) translate(5px,5px)' : '';
-      spans[1].style.opacity   = isOpen ? '0' : '1';
-      spans[2].style.transform = isOpen ? 'rotate(-45deg) translate(5px,-5px)' : '';
-    });
-
-    // close on link click
-    links.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        links.classList.remove('open');
-        burger.querySelectorAll('span').forEach(s => { s.style.transform = ''; s.style.opacity = '1'; });
-      });
-    });
-  })();
-
-  // ── 7. NAV ACTIVE SECTION ─────────────────────
-  (function initNavActive() {
-    const sections = document.querySelectorAll('section[id], header[id]');
-    const navLinks = document.querySelectorAll('.nav-links a');
-
-    window.addEventListener('scroll', () => {
-      let current = '';
-      sections.forEach(sec => {
-        if (window.scrollY >= sec.offsetTop - 160) current = sec.id;
-      });
-      navLinks.forEach(a => {
-        a.style.color = a.getAttribute('href') === '#' + current
-          ? 'var(--neon-cyan)'
-          : '';
-      });
-    }, { passive: true });
-  })();
-
-  // ── 8. GLITCH HOVER on hero name ──────────────
-  (function initGlitch() {
-    const el = document.querySelector('.hero-name');
-    if (!el) return;
-    const orig = el.innerHTML;
-    const chars = '!<>-_\\/[]{}—=+*^?#@$%&~';
-
-    let interval;
-    el.addEventListener('mouseenter', () => {
-      let iter = 0;
-      clearInterval(interval);
-      interval = setInterval(() => {
-        el.querySelectorAll('[data-val]').forEach(span => {
-          if (iter > parseInt(span.dataset.iter || '0')) {
-            span.textContent = span.dataset.val;
-          } else {
-            span.textContent = chars[Math.floor(Math.random() * chars.length)];
-          }
-        });
-        iter += 0.5;
-        if (iter >= 10) {
-          clearInterval(interval);
-          // restore safely
-          el.querySelectorAll('[data-val]').forEach(span => {
-            span.textContent = span.dataset.val;
-          });
-        }
-      }, 40);
-    });
-  })();
-
-});
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 900px) {
+  .about-grid { grid-template-columns: 1fr; text-align: center; }
+  .about-avatar-wrap { margin-bottom: 32px; }
+  .about-tags { justify-content: center; }
+}
+@media (max-width: 768px) {
+  .navbar { padding: 16px 24px; }
+  .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: rgba(3,7,18,0.98); padding: 24px; border-bottom: 1px solid rgba(0,245,255,0.1); gap: 20px; }
+  .nav-links.open { display: flex; }
+  .nav-burger { display: flex; }
+  section { padding: 80px 16px; }
+  #hero { padding: 110px 16px 80px; }
+  .hero-name { font-size: clamp(1.3rem, 7.5vw, 2.6rem); letter-spacing: 0.02em; }
+  .hero-subtitle { font-size: 1rem; }
+  .hero-desc { font-size: 0.9rem; }
+  footer { padding: 24px; flex-direction: column; text-align: center; }
+}

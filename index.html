@@ -1,962 +1,583 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Shoriful Islam Shaon — Video Editor & Motion Designer</title>
-  <meta name="description" content="Shoriful Islam Shaon — Video Editor, Motion Graphics Artist & Graphic Designer based in Khulna, Bangladesh."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet"/>
 
-  <style>
-  /* ── TOKENS ── */
-  :root {
-    --bg:       #0a0a0b;
-    --surface:  #111114;
-    --surface2: #18181c;
-    --border:   rgba(255,255,255,0.07);
-    --accent:   #c8f45a;   /* lime-yellow — warm, not cold neon */
-    --text:     #f0ede8;
-    --muted:    #6b6b72;
-    --dim:      #2a2a30;
-    --serif:   'Instrument Serif', Georgia, serif;
-    --sans:    'Plus Jakarta Sans', sans-serif;
-    --mono:    'Space Mono', monospace;
-  }
+  <meta charset="UTF-8" />
 
-  /* ── RESET ── */
-  *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.6;
-    overflow-x: hidden;
-    cursor: none;
-  }
-  a { color: inherit; text-decoration: none; }
-  img { display: block; max-width: 100%; }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  /* ── CUSTOM CURSOR ── */
-  .cursor {
-    position: fixed;
-    width: 10px; height: 10px;
-    background: var(--accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%,-50%);
-    transition: transform 0.08s ease, width 0.2s, height 0.2s, opacity 0.2s;
-  }
-  .cursor-ring {
-    position: fixed;
-    width: 36px; height: 36px;
-    border: 1px solid rgba(200,244,90,0.4);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(-50%,-50%);
-    transition: transform 0.18s ease, width 0.25s, height 0.25s;
-  }
-  body:has(a:hover) .cursor { width: 16px; height: 16px; }
-  body:has(a:hover) .cursor-ring { width: 52px; height: 52px; border-color: rgba(200,244,90,0.7); }
+  <meta name="description" content="Shoriful Islam Shaon — Video Editor & Graphic Designer portfolio." />
 
-  /* ── NAV ── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem 3rem;
-    mix-blend-mode: normal;
-  }
-  .nav-logo {
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    color: var(--text);
-    opacity: 0.7;
-  }
-  .nav-links {
-    display: flex; gap: 2.5rem; list-style: none;
-  }
-  .nav-links a {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--text); }
-  .nav-dot {
-    display: flex; align-items: center; gap: 0.5rem;
-    font-family: var(--mono); font-size: 0.65rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--accent);
-  }
-  .nav-dot::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: blink 2s infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  <title>Shoriful Islam Shaon | Video Editor & Graphic Designer</title>
 
-  /* ── HERO ── */
-  #hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 0 3rem 5rem;
-    position: relative;
-    overflow: hidden;
-  }
 
-  /* floating photo top-right */
-  .hero-photo {
-    position: absolute;
-    top: 8rem; right: 5rem;
-    width: 260px;
-    z-index: 2;
-  }
-  .hero-photo img {
-    width: 100%;
-    border-radius: 160px;
-    filter: grayscale(20%) contrast(1.05);
-    box-shadow: 0 0 80px rgba(200,244,90,0.12), 0 0 0 1px rgba(255,255,255,0.06);
-  }
-  .hero-photo-glow {
-    position: absolute;
-    inset: -20px;
-    background: radial-gradient(circle, rgba(200,244,90,0.15) 0%, transparent 70%);
-    border-radius: 50%;
-    z-index: -1;
-  }
 
-  /* floating label */
-  .float-label {
-    position: absolute;
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    background: var(--surface);
-    padding: 0.5rem 1rem;
-    border-radius: 100px;
-    white-space: nowrap;
-  }
-  .label-khulna { top: 19rem; right: 3rem; }
-  .label-avail  { top: 8.5rem; right: 20rem; color: var(--accent); border-color: rgba(200,244,90,0.25); }
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-  /* hero text */
-  .hero-greeting {
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 1rem;
-  }
-  .hero-headline {
-    font-family: var(--serif);
-    font-size: clamp(3.5rem, 7vw, 7.5rem);
-    line-height: 1.0;
-    letter-spacing: -0.01em;
-    color: var(--text);
-    max-width: 780px;
-    margin-bottom: 2rem;
-    position: relative;
-    z-index: 3;
-  }
-  .hero-headline em {
-    font-style: italic;
-    color: var(--accent);
-  }
-  .hero-sub {
-    display: flex;
-    align-items: flex-start;
-    gap: 4rem;
-    max-width: 780px;
-  }
-  .hero-sub-text {
-    font-size: 1rem;
-    color: var(--muted);
-    max-width: 340px;
-    line-height: 1.75;
-  }
-  .hero-sub-text strong { color: var(--text); font-weight: 500; }
-  .hero-ctas { display: flex; flex-direction: column; gap: 0.8rem; flex-shrink: 0; }
-  .btn-pill {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.8rem 1.8rem;
-    border-radius: 100px;
-    transition: all 0.22s;
-    white-space: nowrap;
-  }
-  .btn-filled {
-    background: var(--text);
-    color: var(--bg);
-  }
-  .btn-filled:hover { background: var(--accent); }
-  .btn-ghost {
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
-  .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  /* big year watermark */
-  .hero-year {
-    position: absolute;
-    bottom: 3rem; right: 3rem;
-    font-family: var(--serif);
-    font-size: 9rem;
-    line-height: 1;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(255,255,255,0.06);
-    letter-spacing: -0.04em;
-    pointer-events: none;
-    user-select: none;
-    z-index: 1;
-  }
 
-  /* ── MARQUEE STRIP ── */
-  .marquee-strip {
-    overflow: hidden;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 0;
-    background: var(--surface);
-  }
-  .marquee-track {
-    display: flex;
-    width: max-content;
-    animation: marquee 22s linear infinite;
-  }
-  .marquee-item {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 0 2rem;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .marquee-item span {
-    width: 4px; height: 4px;
-    background: var(--accent);
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
 
-  /* ── ABOUT ── */
-  #about {
-    padding: 8rem 3rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6rem;
-    align-items: start;
-  }
-  .section-label {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-  .section-label::before { content:'('; } .section-label::after { content:')'; }
-  .about-big {
-    font-family: var(--serif);
-    font-size: clamp(2rem, 3.5vw, 3.2rem);
-    line-height: 1.25;
-    color: var(--text);
-    margin-bottom: 2rem;
-  }
-  .about-big em { font-style: italic; color: var(--accent); }
-  .about-body { color: var(--muted); font-size: 1rem; line-height: 1.8; }
-  .about-body p + p { margin-top: 1rem; }
-  .about-body strong { color: var(--text); font-weight: 500; }
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css" />
 
-  /* stats row */
-  .about-stats {
-    display: flex;
-    gap: 0;
-    margin-top: 3rem;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .about-stat {
-    flex: 1;
-    padding: 1.5rem;
-    border-right: 1px solid var(--border);
-    text-align: center;
-  }
-  .about-stat:last-child { border-right: none; }
-  .stat-n {
-    font-family: var(--serif);
-    font-size: 2.4rem;
-    line-height: 1;
-    color: var(--text);
-    margin-bottom: 0.3rem;
-  }
-  .stat-l {
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  /* tags */
-  .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
-  .tag {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.45rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    color: var(--muted);
-    transition: all 0.2s;
-  }
-  .tag:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* ── WORK (VIDEO) ── */
-  #portfolio { padding: 0 3rem 8rem; }
-  .work-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 3rem;
-  }
-  .work-title {
-    font-family: var(--serif);
-    font-size: clamp(2rem, 3.5vw, 3rem);
-    color: var(--text);
-  }
-  .work-title em { font-style: italic; color: var(--accent); }
-  .work-count {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding-bottom: 0.5rem;
-  }
-  .video-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-  .video-row {
-    display: grid;
-    grid-template-columns: 1fr 280px 120px;
-    align-items: center;
-    background: var(--surface);
-    padding: 1.6rem 2rem;
-    gap: 2rem;
-    transition: background 0.18s;
-    cursor: pointer;
-  }
-  .video-row:hover { background: var(--surface2); }
-  .video-row-left {}
-  .video-row-num {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    color: var(--dim);
-    letter-spacing: 0.1em;
-    margin-bottom: 0.4rem;
-  }
-  .video-row-title {
-    font-family: var(--serif);
-    font-size: 1.4rem;
-    color: var(--text);
-  }
-  .video-row-embed {
-    aspect-ratio: 16/9;
-    border-radius: 8px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .video-row-embed iframe { width: 100%; height: 100%; border: 0; }
-  .video-row-tag {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: rgba(200,244,90,0.08);
-    border: 1px solid rgba(200,244,90,0.2);
-    padding: 0.35rem 0.8rem;
-    border-radius: 100px;
-    text-align: center;
-    justify-self: end;
-  }
 
-  /* ── DESIGN ── */
-  #design { padding: 0 3rem 8rem; }
-  .design-header { margin-bottom: 3rem; }
-  .design-title { font-family: var(--serif); font-size: clamp(2rem,3.5vw,3rem); color: var(--text); }
-  .design-title em { font-style: italic; color: var(--accent); }
+  <link rel="stylesheet" href="style.css" />
 
-  .design-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-  }
-  .design-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    transition: all 0.22s;
-    position: relative;
-    overflow: hidden;
-  }
-  .design-card:hover {
-    background: var(--surface2);
-    border-color: rgba(255,255,255,0.14);
-    transform: translateY(-3px);
-  }
-  .design-card-num {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
-    color: var(--dim);
-  }
-  .design-card-title {
-    font-family: var(--serif);
-    font-size: 1.5rem;
-    color: var(--text);
-    flex: 1;
-  }
-  .design-card-type {
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .design-card-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    color: var(--accent);
-    margin-top: auto;
-    transition: gap 0.2s;
-  }
-  .design-card-link:hover { gap: 0.8rem; }
-  /* featured card */
-  .design-card.featured {
-    grid-column: span 2;
-    background: var(--surface2);
-    border-color: rgba(200,244,90,0.15);
-  }
-  .design-card.featured .design-card-title { font-size: 2rem; }
-
-  /* ── SKILLS INLINE ── */
-  #skills { padding: 0 3rem 8rem; }
-  .skills-inner {
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    background: var(--surface);
-  }
-  .skills-top {
-    padding: 3rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .skills-top h2 {
-    font-family: var(--serif);
-    font-size: clamp(1.8rem, 3vw, 2.8rem);
-    color: var(--text);
-  }
-  .skills-top h2 em { font-style: italic; color: var(--accent); }
-  .skills-rows { display: flex; flex-direction: column; }
-  .skill-row {
-    display: grid;
-    grid-template-columns: 2rem 1fr 2fr 80px;
-    align-items: center;
-    gap: 2rem;
-    padding: 1.2rem 3rem;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.18s;
-  }
-  .skill-row:last-child { border-bottom: none; }
-  .skill-row:hover { background: var(--surface2); }
-  .skill-row-icon { font-size: 1.1rem; }
-  .skill-row-name { font-family: var(--sans); font-weight: 500; color: var(--text); font-size: 0.95rem; }
-  .skill-row-bar-wrap { height: 3px; background: var(--dim); border-radius: 3px; }
-  .skill-row-bar { height: 100%; background: linear-gradient(90deg, var(--accent), rgba(200,244,90,0.4)); border-radius: 3px; }
-  .skill-row-pct { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); text-align: right; }
-
-  /* ── CONTACT ── */
-  #contact {
-    padding: 8rem 3rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6rem;
-    align-items: start;
-    border-top: 1px solid var(--border);
-  }
-  .contact-big {
-    font-family: var(--serif);
-    font-size: clamp(2.8rem, 5vw, 5.5rem);
-    line-height: 1.0;
-    color: var(--text);
-    margin-bottom: 1.5rem;
-  }
-  .contact-big em { font-style: italic; color: var(--accent); }
-  .contact-sub { color: var(--muted); font-size: 1rem; line-height: 1.75; max-width: 360px; }
-  .contact-links { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 2.5rem; }
-  .contact-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.1rem 1.4rem;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--muted);
-    font-size: 0.9rem;
-    transition: all 0.2s;
-  }
-  .contact-link:hover { border-color: rgba(255,255,255,0.18); color: var(--text); background: var(--surface); }
-  .contact-link-label { display: flex; align-items: center; gap: 0.8rem; }
-  .contact-link-arr { font-size: 0.8rem; opacity: 0.4; transition: opacity 0.2s, transform 0.2s; }
-  .contact-link:hover .contact-link-arr { opacity: 1; transform: translate(3px, -3px); }
-
-  /* availability card */
-  .avail-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-  .avail-top { display: flex; align-items: center; gap: 0.8rem; }
-  .avail-badge {
-    display: flex; align-items: center; gap: 0.5rem;
-    font-family: var(--mono); font-size: 0.65rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--accent);
-  }
-  .avail-badge::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: blink 2s infinite;
-  }
-  .avail-title {
-    font-family: var(--serif);
-    font-size: 1.9rem;
-    color: var(--text);
-    line-height: 1.2;
-  }
-  .avail-title em { font-style: italic; color: var(--accent); }
-  .avail-desc { color: var(--muted); font-size: 0.95rem; line-height: 1.7; }
-  .avail-cta {
-    display: block;
-    text-align: center;
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    background: var(--text);
-    color: var(--bg);
-    padding: 1rem;
-    border-radius: 100px;
-    transition: all 0.2s;
-    font-weight: 700;
-  }
-  .avail-cta:hover { background: var(--accent); }
-
-  /* ── FOOTER ── */
-  footer {
-    padding: 2rem 3rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .footer-l { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-  .footer-c { font-family: var(--serif); font-size: 1.2rem; color: var(--text); font-style: italic; }
-  .footer-r { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    nav { padding: 1.2rem 1.5rem; }
-    .nav-links { display: none; }
-    #hero { padding: 0 1.5rem 4rem; }
-    .hero-photo { display: none; }
-    .hero-headline { font-size: 3.2rem; }
-    .hero-sub { flex-direction: column; gap: 2rem; }
-    #about { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 1.5rem; }
-    #portfolio, #design, #skills, #contact { padding-left: 1.5rem; padding-right: 1.5rem; }
-    .video-row { grid-template-columns: 1fr; }
-    .video-row-embed { display: none; }
-    .design-grid { grid-template-columns: 1fr; }
-    .design-card.featured { grid-column: span 1; }
-    #contact { grid-template-columns: 1fr; gap: 3rem; }
-    footer { flex-direction: column; gap: 1rem; text-align: center; }
-    .skill-row { grid-template-columns: 2rem 1fr; gap: 1rem; }
-    .skill-row-bar-wrap, .skill-row-pct { display: none; }
-  }
-  </style>
 </head>
+
 <body>
 
-  <!-- CURSOR -->
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-ring" id="cursorRing"></div>
 
-  <!-- NAV -->
-  <nav>
-    <div class="nav-logo">shaon.fs4</div>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#portfolio">Work</a></li>
-      <li><a href="#design">Design</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <div class="nav-dot">Available for work</div>
-  </nav>
 
-  <!-- HERO -->
-  <section id="hero">
+<canvas id="particles-canvas"></canvas>
 
-    <!-- floating photo -->
-    <div class="hero-photo">
-      <div class="hero-photo-glow"></div>
-      <img src="https://shaonfs4-cpu.github.io/shaon/images/shaon.png" alt="Shoriful Islam Shaon"/>
-    </div>
 
-    <!-- floating labels -->
-    <div class="float-label label-avail">✦ Open to projects</div>
-    <div class="float-label label-khulna">📍 Khulna, Bangladesh</div>
 
-    <!-- text -->
-    <div class="hero-greeting">Hello! I am Shoriful Islam Shaon</div>
-    <h1 class="hero-headline">
-      A video editor who makes <em>frames</em><br/>
-      feel like <em>feelings.</em>
-    </h1>
+<nav class="navbar">
 
-    <div class="hero-sub">
-      <p class="hero-sub-text">
-        I craft <strong>cinematic edits</strong>, motion graphics, and AI-assisted video that connects with real audiences — for creators, real estate brands, and businesses across Bangladesh and beyond.
-      </p>
-      <div class="hero-ctas">
-        <a href="#portfolio" class="btn-pill btn-filled">View My Work</a>
-        <a href="#contact" class="btn-pill btn-ghost">Let's Connect</a>
-      </div>
-    </div>
+  <a href="#hero" class="nav-logo">SIS<span>.</span></a>
 
-    <div class="hero-year">2026</div>
-  </section>
+  <ul class="nav-links">
 
-  <!-- MARQUEE -->
-  <div class="marquee-strip">
-    <div class="marquee-track">
-      <!-- repeated twice for seamless loop -->
-      <div class="marquee-item"><span></span>Premiere Pro</div>
-      <div class="marquee-item"><span></span>After Effects</div>
-      <div class="marquee-item"><span></span>Motion Graphics</div>
-      <div class="marquee-item"><span></span>Photoshop</div>
-      <div class="marquee-item"><span></span>Illustrator</div>
-      <div class="marquee-item"><span></span>AI Video Tools</div>
-      <div class="marquee-item"><span></span>Documentary Editing</div>
-      <div class="marquee-item"><span></span>UGC Ads</div>
-      <div class="marquee-item"><span></span>Talking Head</div>
-      <div class="marquee-item"><span></span>CEP Extensions</div>
-      <div class="marquee-item"><span></span>Brand Design</div>
-      <div class="marquee-item"><span></span>Short-form Content</div>
-      <!-- duplicate -->
-      <div class="marquee-item"><span></span>Premiere Pro</div>
-      <div class="marquee-item"><span></span>After Effects</div>
-      <div class="marquee-item"><span></span>Motion Graphics</div>
-      <div class="marquee-item"><span></span>Photoshop</div>
-      <div class="marquee-item"><span></span>Illustrator</div>
-      <div class="marquee-item"><span></span>AI Video Tools</div>
-      <div class="marquee-item"><span></span>Documentary Editing</div>
-      <div class="marquee-item"><span></span>UGC Ads</div>
-      <div class="marquee-item"><span></span>Talking Head</div>
-      <div class="marquee-item"><span></span>CEP Extensions</div>
-      <div class="marquee-item"><span></span>Brand Design</div>
-      <div class="marquee-item"><span></span>Short-form Content</div>
-    </div>
+    <li><a href="#hero">Home</a></li>
+
+    <li><a href="#about">About</a></li>
+
+    <li><a href="#skills">Skills</a></li>
+
+    <li><a href="#portfolio">Portfolio</a></li>
+
+    <li><a href="#design">Design</a></li>
+
+    <li><a href="#contact">Contact</a></li>
+
+  </ul>
+
+  <div class="nav-burger" aria-label="Toggle menu">
+
+    <span></span><span></span><span></span>
+
   </div>
 
-  <!-- ABOUT -->
-  <section id="about">
-    <div>
-      <div class="section-label">who i am</div>
-      <h2 class="about-big">
-        Turning raw footage<br/>into <em>stories worth</em><br/>watching.
-      </h2>
-      <div class="about-stats">
-        <div class="about-stat"><div class="stat-n">1.5+</div><div class="stat-l">Years XP</div></div>
-        <div class="about-stat"><div class="stat-n">50+</div><div class="stat-l">Projects</div></div>
-        <div class="about-stat"><div class="stat-n">10+</div><div class="stat-l">Clients</div></div>
-      </div>
-    </div>
-    <div>
-      <div class="about-body">
-        <p>I'm <strong>Shoriful Islam Shaon</strong>, a freelance Video Editor, Motion Graphics Artist, and Graphic Designer based in Khulna, Bangladesh.</p>
-        <p>With 1.5+ years of experience, I work with <strong>real estate brands, content creators, and businesses</strong> — delivering everything from cinematic documentary edits to punchy short-form ads.</p>
-        <p>Beyond editing, I build custom <strong>After Effects CEP extensions</strong> and use AI video tools to make production faster and smarter. My toolkit combines Adobe CC mastery with a genuine love for creative problem-solving.</p>
-      </div>
-      <div class="tag-cloud">
-        <span class="tag">Documentary</span>
-        <span class="tag">Motion Graphics</span>
-        <span class="tag">UGC Ads</span>
-        <span class="tag">Talking Head</span>
-        <span class="tag">Brand Design</span>
-        <span class="tag">AI Video</span>
-        <span class="tag">Short-form</span>
-        <span class="tag">CEP Dev</span>
-      </div>
-    </div>
-  </section>
+</nav>
 
-  <!-- VIDEO PORTFOLIO -->
-  <section id="portfolio">
-    <div class="work-header">
-      <div>
-        <div class="section-label">my work</div>
-        <h2 class="work-title">Video <em>Portfolio</em></h2>
-      </div>
-      <div class="work-count">04 projects</div>
-    </div>
 
-    <div class="video-list">
-      <div class="video-row">
-        <div class="video-row-left">
-          <div class="video-row-num">01</div>
-          <div class="video-row-title">Documentary Edit — Vol. 1</div>
-        </div>
-        <div class="video-row-embed">
-          <iframe src="https://www.youtube.com/embed/4v07hhgM0cE?si=TQCiWs8mNq_Q4ZfU" title="Documentary" allowfullscreen loading="lazy"></iframe>
-        </div>
-        <span class="video-row-tag">Documentary</span>
-      </div>
-      <div class="video-row">
-        <div class="video-row-left">
-          <div class="video-row-num">02</div>
-          <div class="video-row-title">Documentary Edit — Vol. 2</div>
-        </div>
-        <div class="video-row-embed">
-          <iframe src="https://www.youtube.com/embed/OMNp9nLGh7Y?si=XXanxKLxWt-EBDC0" title="Documentary" allowfullscreen loading="lazy"></iframe>
-        </div>
-        <span class="video-row-tag">Documentary</span>
-      </div>
-      <div class="video-row">
-        <div class="video-row-left">
-          <div class="video-row-num">03</div>
-          <div class="video-row-title">Recent Client Project</div>
-        </div>
-        <div class="video-row-embed">
-          <iframe src="https://www.youtube.com/embed/lJivusOV6uM?si=ftuVQ43HaGoqTHow" title="Recent Project" allowfullscreen loading="lazy"></iframe>
-        </div>
-        <span class="video-row-tag">Recent Work</span>
-      </div>
-      <div class="video-row">
-        <div class="video-row-left">
-          <div class="video-row-num">04</div>
-          <div class="video-row-title">Talking Head / Shorts</div>
-        </div>
-        <div class="video-row-embed">
-          <iframe src="https://www.youtube.com/embed/Wcc_s28CcY8?si=vzgBPvjCfX7mrtXT" title="Talking Head" allowfullscreen loading="lazy"></iframe>
-        </div>
-        <span class="video-row-tag">Talking Head</span>
-      </div>
-    </div>
-  </section>
 
-  <!-- DESIGN PROJECTS -->
-  <section id="design">
-    <div class="design-header">
-      <div class="section-label">graphic design</div>
-      <h2 class="design-title">Design <em>Projects</em></h2>
-    </div>
-    <div class="design-grid">
-      <a href="https://www.behance.net/gallery/250921987/vitality" target="_blank" class="design-card featured">
-        <div class="design-card-num">01 — Featured</div>
-        <div class="design-card-title">Vitality</div>
-        <div class="design-card-type">Brand Design · Static Ads · Social Media</div>
-        <div class="design-card-link">View on Behance ↗</div>
-      </a>
-      <a href="https://www.behance.net/gallery/250921883/prkaritiz" target="_blank" class="design-card">
-        <div class="design-card-num">02</div>
-        <div class="design-card-title">Prakritiz</div>
-        <div class="design-card-type">Honey Brand · Social Media</div>
-        <div class="design-card-link">View on Behance ↗</div>
-      </a>
-      <a href="https://www.behance.net/gallery/250922245/_" target="_blank" class="design-card">
-        <div class="design-card-num">03</div>
-        <div class="design-card-title">Creative Design</div>
-        <div class="design-card-type">Graphic Design</div>
-        <div class="design-card-link">View on Behance ↗</div>
-      </a>
-      <a href="https://www.behance.net/gallery/250922313/pain-Relief" target="_blank" class="design-card">
-        <div class="design-card-num">04</div>
-        <div class="design-card-title">Pain Relief</div>
-        <div class="design-card-type">Health Brand · Ad Design</div>
-        <div class="design-card-link">View on Behance ↗</div>
-      </a>
-      <a href="https://www.behance.net/gallery/250922373/Diabetes" target="_blank" class="design-card">
-        <div class="design-card-num">05</div>
-        <div class="design-card-title">Diabetes Campaign</div>
-        <div class="design-card-type">Health Awareness · Ads</div>
-        <div class="design-card-link">View on Behance ↗</div>
-      </a>
-    </div>
-  </section>
+<header id="hero">
 
-  <!-- SKILLS -->
-  <section id="skills">
-    <div class="skills-inner">
-      <div class="skills-top">
-        <div class="section-label">tools i use</div>
-        <h2>Software <em>&amp; Skills</em></h2>
-      </div>
-      <div class="skills-rows">
-        <div class="skill-row">
-          <div class="skill-row-icon">🎬</div>
-          <div class="skill-row-name">Premiere Pro</div>
-          <div class="skill-row-bar-wrap"><div class="skill-row-bar" style="width:95%"></div></div>
-          <div class="skill-row-pct">95%</div>
-        </div>
-        <div class="skill-row">
-          <div class="skill-row-icon">✨</div>
-          <div class="skill-row-name">After Effects</div>
-          <div class="skill-row-bar-wrap"><div class="skill-row-bar" style="width:92%"></div></div>
-          <div class="skill-row-pct">92%</div>
-        </div>
-        <div class="skill-row">
-          <div class="skill-row-icon">🖼️</div>
-          <div class="skill-row-name">Photoshop</div>
-          <div class="skill-row-bar-wrap"><div class="skill-row-bar" style="width:88%"></div></div>
-          <div class="skill-row-pct">88%</div>
-        </div>
-        <div class="skill-row">
-          <div class="skill-row-icon">🎨</div>
-          <div class="skill-row-name">Illustrator</div>
-          <div class="skill-row-bar-wrap"><div class="skill-row-bar" style="width:80%"></div></div>
-          <div class="skill-row-pct">80%</div>
-        </div>
-        <div class="skill-row">
-          <div class="skill-row-icon">🤖</div>
-          <div class="skill-row-name">AI Video Tools</div>
-          <div class="skill-row-bar-wrap"><div class="skill-row-bar" style="width:85%"></div></div>
-          <div class="skill-row-pct">85%</div>
-        </div>
-        <div class="skill-row">
-          <div class="skill-row-icon">⚙️</div>
-          <div class="skill-row-name">CEP Extensions (ExtendScript)</div>
-          <div class="skill-row-bar-wrap"><div class="skill-row-bar" style="width:72%"></div></div>
-          <div class="skill-row-pct">72%</div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="hero-glitch-line"></div>
 
-  <!-- CONTACT -->
-  <section id="contact">
-    <div>
-      <div class="section-label">get in touch</div>
-      <h2 class="contact-big">
-        Let's make<br/>something <em>great</em><br/>together.
-      </h2>
-      <p class="contact-sub">Have a project in mind? I'm available for video editing, motion graphics, graphic design, and AI-assisted video production.</p>
-      <div class="contact-links">
-        <a href="mailto:shaon.fs4@gmail.com" class="contact-link">
-          <span class="contact-link-label">✉️ &nbsp; shaon.fs4@gmail.com</span>
-          <span class="contact-link-arr">↗</span>
-        </a>
-        <a href="https://wa.link/497so2" target="_blank" class="contact-link">
-          <span class="contact-link-label">💬 &nbsp; WhatsApp</span>
-          <span class="contact-link-arr">↗</span>
-        </a>
-        <a href="https://www.linkedin.com/in/shariful-islam-shaon2000" target="_blank" class="contact-link">
-          <span class="contact-link-label">💼 &nbsp; LinkedIn</span>
-          <span class="contact-link-arr">↗</span>
-        </a>
-        <a href="https://www.facebook.com/share/1D98B3kd8D/" target="_blank" class="contact-link">
-          <span class="contact-link-label">📘 &nbsp; Facebook</span>
-          <span class="contact-link-arr">↗</span>
-        </a>
-      </div>
+
+
+  <div>
+
+    <p class="hero-tag">Portfolio — 2026</p>
+
+
+
+    <h1 class="hero-name">
+
+      <span data-val="S" data-iter="0">S</span><span data-val="h" data-iter="1">h</span><span data-val="o" data-iter="1">o</span><span data-val="r" data-iter="2">r</span><span data-val="i" data-iter="2">i</span><span data-val="f" data-iter="3">f</span><span data-val="u" data-iter="3">u</span><span data-val="l" data-iter="4">l</span>&nbsp;<span data-val="I" data-iter="4">I</span><span data-val="s" data-iter="5">s</span><span data-val="l" data-iter="5">l</span><span data-val="a" data-iter="6">a</span><span data-val="m" data-iter="6">m</span>&nbsp;<span data-val="S" data-iter="7">S</span><span data-val="h" data-iter="7">h</span><span data-val="a" data-iter="8">a</span><span data-val="o" data-iter="8">o</span><span data-val="n" data-iter="9">n</span>
+
+    </h1>
+
+
+
+    <p class="hero-subtitle">Video Editor &amp; Graphic Designer</p>
+
+
+
+    <p class="hero-desc">
+
+      Crafting high-energy visual experiences, cinematic edits,
+
+      and striking graphic designs that tell compelling stories.
+
+    </p>
+
+
+
+    <div class="hero-btns">
+
+      <a href="#portfolio" class="btn-neon primary">View Work</a>
+
+      <a href="#contact" class="btn-neon outline">Contact Me</a>
+
     </div>
 
-    <div class="avail-card">
-      <div class="avail-badge">Currently available</div>
-      <div class="avail-title">
-        Ready for your<br/><em>next project.</em>
-      </div>
-      <div class="avail-desc">
-        I'm open to freelance collaborations — whether it's a quick social media ad or a full documentary production. Let's talk about what you need.
-      </div>
-      <a href="mailto:shaon.fs4@gmail.com" class="avail-cta">Send Me a Message</a>
+  </div>
+
+
+
+  <div class="scroll-hint">SCROLL</div>
+
+</header>
+
+
+
+<section id="stats">
+
+  <div class="stats-grid">
+
+    <div class="stat-card reveal d1" style="--glow-color:var(--neon-cyan)">
+
+      <div class="stat-number" style="color:var(--neon-cyan);text-shadow:0 0 30px var(--neon-cyan)"
+
+           data-count="1.5" data-suffix="">1.5</div>
+
+      <div class="stat-label">Years Experience</div>
+
     </div>
-  </section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-l">© 2026 Shoriful Islam Shaon</div>
-    <div class="footer-c">Shaon.</div>
-    <div class="footer-r">Khulna, Bangladesh</div>
-  </footer>
+    <div class="stat-card reveal d2" style="--glow-color:var(--neon-green)">
 
-  <!-- CURSOR JS -->
-  <script>
-    const cursor = document.getElementById('cursor');
-    const ring   = document.getElementById('cursorRing');
-    let mx = 0, my = 0, rx = 0, ry = 0;
+      <div class="stat-number" style="color:var(--neon-green);text-shadow:0 0 30px var(--neon-green)"
 
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.left = mx + 'px';
-      cursor.style.top  = my + 'px';
-    });
+           data-count="10" data-suffix="+">0</div>
 
-    function animateRing() {
-      rx += (mx - rx) * 0.12;
-      ry += (my - ry) * 0.12;
-      ring.style.left = rx + 'px';
-      ring.style.top  = ry + 'px';
-      requestAnimationFrame(animateRing);
-    }
-    animateRing();
-  </script>
+      <div class="stat-label">Happy Clients</div>
+
+    </div>
+
+    <div class="stat-card reveal d3" style="--glow-color:var(--neon-pink)">
+
+      <div class="stat-number" style="color:var(--neon-pink);text-shadow:0 0 30px var(--neon-pink)"
+
+           data-count="90" data-suffix="+">0</div>
+
+      <div class="stat-label">Videos Edited</div>
+
+    </div>
+
+    <div class="stat-card reveal d4" style="--glow-color:var(--neon-purple)">
+
+      <div class="stat-number" style="color:var(--neon-purple);text-shadow:0 0 30px var(--neon-purple)"
+
+           data-count="120" data-suffix="+">0</div>
+
+      <div class="stat-label">Design Projects</div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section id="about">
+
+  <div class="section-header reveal">
+
+    <p class="section-label">// who am i</p>
+
+    <h2 class="section-title">About Me</h2>
+
+    <div class="section-line"></div>
+
+  </div>
+
+
+
+  <div class="about-grid">
+
+    <div class="about-avatar-wrap reveal-left">
+
+      <div class="about-avatar-frame">
+
+        
+
+        <img src="images/shaon.png" alt="Shoriful Islam Shaon" class="profile-pic" />
+
+        
+
+        <div class="avatar-scan"></div>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="about-content reveal-right">
+
+      <p>
+
+        I'm <strong style="color:#f1f5f9">Shoriful Islam Shaon</strong>, a passionate Video Editor and
+
+        Graphic Designer based in Bangladesh. With 1.5+ years of hands-on experience,
+
+        I specialize in crafting visually compelling content that connects with audiences.
+
+      </p>
+
+      <p>
+
+        From cinematic documentary edits to dynamic short-form content and polished
+
+        graphic designs — I bring creative vision and technical precision to every project.
+
+      </p>
+
+      <p>
+
+        My workflow combines industry-standard Adobe tools with modern AI video technologies
+
+        to deliver high-quality results, efficiently and on time.
+
+      </p>
+
+
+
+      <div class="about-tags">
+
+        <span class="tag tag-cyan">Documentary</span>
+
+        <span class="tag tag-pink">Motion Graphics</span>
+
+        <span class="tag tag-green">Brand Design</span>
+
+        <span class="tag tag-cyan">Short-form Content</span>
+
+        <span class="tag tag-pink">Talking Head</span>
+
+        <span class="tag tag-green">AI Video</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section id="skills">
+
+  <div class="section-header reveal">
+
+    <p class="section-label">// tools i use</p>
+
+    <h2 class="section-title">Software & Skills</h2>
+
+    <div class="section-line"></div>
+
+  </div>
+
+
+
+  <div class="skills-grid">
+
+    <div class="skill-card reveal d1" style="--skill-glow:rgba(0,245,255,0.1)">
+
+      <i class="devicon-premierepro-plain colored"></i>
+
+      <span>Premiere Pro</span>
+
+    </div>
+
+    <div class="skill-card reveal d2" style="--skill-glow:rgba(156,100,255,0.1)">
+
+      <i class="devicon-aftereffects-plain colored"></i>
+
+      <span>After Effects</span>
+
+    </div>
+
+    <div class="skill-card reveal d3" style="--skill-glow:rgba(49,168,255,0.1)">
+
+      <i class="devicon-photoshop-plain colored"></i>
+
+      <span>Photoshop</span>
+
+    </div>
+
+    <div class="skill-card reveal d4" style="--skill-glow:rgba(255,154,0,0.1)">
+
+      <i class="devicon-illustrator-plain colored"></i>
+
+      <span>Illustrator</span>
+
+    </div>
+
+    <div class="skill-card reveal d5" style="--skill-glow:rgba(0,255,136,0.1)">
+
+      <i class="fa-solid fa-robot" style="color:var(--neon-cyan)"></i>
+
+      <span>AI Video Tools</span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section id="portfolio">
+
+  <div class="section-header reveal">
+
+    <p class="section-label">// my work</p>
+
+    <h2 class="section-title">Video Portfolio</h2>
+
+    <div class="section-line"></div>
+
+  </div>
+
+
+
+  <div class="portfolio-grid">
+
+
+
+    <div class="video-card reveal-left d1">
+
+      <iframe style="aspect-ratio:16/9"
+
+        src="https://www.youtube.com/embed/4v07hhgM0cE?si=TQCiWs8mNq_Q4ZfU"
+
+        title="Documentary 1" frameborder="0"
+
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <div class="video-badge"><span class="badge badge-cyan">Documentary</span></div>
+
+    </div>
+
+
+
+    <div class="video-card reveal-right d1">
+
+      <iframe style="aspect-ratio:16/9"
+
+        src="https://www.youtube.com/embed/OMNp9nLGh7Y?si=XXanxKLxWt-EBDC0"
+
+        title="Documentary 2" frameborder="0"
+
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <div class="video-badge"><span class="badge badge-cyan">Documentary</span></div>
+
+    </div>
+
+
+
+    <div class="video-card reveal-left d2">
+
+      <iframe style="aspect-ratio:16/9"
+
+        src="https://www.youtube.com/embed/lJivusOV6uM?si=ftuVQ43HaGoqTHow"
+
+        title="Recent Project" frameborder="0"
+
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <div class="video-badge"><span class="badge badge-purple">Recent Project</span></div>
+
+    </div>
+
+
+
+    <div class="shorts-center reveal-right d2">
+
+      <div class="video-card shorts-card">
+
+        <iframe style="aspect-ratio:9/16;width:100%"
+
+          src="https://www.youtube.com/embed/Wcc_s28CcY8?si=vzgBPvjCfX7mrtXT"
+
+          title="Talking Head" frameborder="0"
+
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+
+          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+        <div class="video-badge"><span class="badge badge-green">Talking Head / Shorts</span></div>
+
+      </div>
+
+    </div>
+
+
+
+  </div>
+
+</section>
+
+
+
+<section id="design">
+
+  <div class="section-header reveal">
+
+    <p class="section-label">// graphic design</p>
+
+    <h2 class="section-title">Design Projects</h2>
+
+    <div class="section-line"></div>
+
+  </div>
+
+  <p class="reveal" style="text-align:center;color:var(--text-dim);margin-bottom:40px">
+
+    Click to view full projects on Behance
+
+  </p>
+
+
+
+  <div class="design-grid">
+
+    <a href="https://www.behance.net/gallery/250921987/vitality" target="_blank" class="behance-card reveal d1">
+
+      <i class="fab fa-behance"></i>
+
+      <h3>Vitality</h3>
+
+      <span>View Project →</span>
+
+    </a>
+
+    <a href="https://www.behance.net/gallery/250921883/prkaritiz" target="_blank" class="behance-card reveal d2">
+
+      <i class="fab fa-behance"></i>
+
+      <h3>Prkaritiz</h3>
+
+      <span>View Project →</span>
+
+    </a>
+
+    <a href="https://www.behance.net/gallery/250922245/_" target="_blank" class="behance-card reveal d3">
+
+      <i class="fab fa-behance"></i>
+
+      <h3>Creative Design</h3>
+
+      <span>View Project →</span>
+
+    </a>
+
+    <a href="https://www.behance.net/gallery/250922313/pain-Relief" target="_blank" class="behance-card reveal d4">
+
+      <i class="fab fa-behance"></i>
+
+      <h3>Pain Relief</h3>
+
+      <span>View Project →</span>
+
+    </a>
+
+    <a href="https://www.behance.net/gallery/250922373/Diabetes" target="_blank" class="behance-card reveal d5">
+
+      <i class="fab fa-behance"></i>
+
+      <h3>Diabetes</h3>
+
+      <span>View Project →</span>
+
+    </a>
+
+  </div>
+
+</section>
+
+
+
+<section id="contact">
+
+  <div class="section-header reveal">
+
+    <p class="section-label">// get in touch</p>
+
+    <h2 class="section-title">Let's Work Together</h2>
+
+    <div class="section-line"></div>
+
+  </div>
+
+
+
+  <p class="contact-sub reveal">
+
+    Have a project in mind? Let's create something extraordinary together.
+
+  </p>
+
+
+
+  <div class="social-grid reveal">
+
+    <a href="mailto:shaon.fs4@gmail.com" class="social-btn email" title="Email">
+
+      <i class="fas fa-envelope"></i>
+
+    </a>
+
+    <a href="https://wa.link/497so2" target="_blank" class="social-btn wa" title="WhatsApp">
+
+      <i class="fab fa-whatsapp"></i>
+
+    </a>
+
+    <a href="https://www.linkedin.com/in/shariful-islam-shaon2000" target="_blank" class="social-btn li" title="LinkedIn">
+
+      <i class="fab fa-linkedin-in"></i>
+
+    </a>
+
+    <a href="https://www.facebook.com/share/1D98B3kd8D/" target="_blank" class="social-btn fb" title="Facebook">
+
+      <i class="fab fa-facebook-f"></i>
+
+    </a>
+
+  </div>
+
+
+
+  <div class="reveal" style="text-align:center">
+
+    <a href="mailto:shaon.fs4@gmail.com" class="btn-neon primary">Send a Message</a>
+
+  </div>
+
+</section>
+
+
+
+<footer>
+
+  <p class="footer-copy">© 2026 <span>Shoriful Islam Shaon</span>. All rights reserved.</p>
+
+  <p class="footer-status">
+
+    <span class="status-dot"></span>
+
+    Available for work
+
+  </p>
+
+</footer>
+
+
+
+<script src="script.js"></script>
+
 </body>
+
 </html>

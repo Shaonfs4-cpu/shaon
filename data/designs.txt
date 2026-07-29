@@ -20,7 +20,7 @@ title: Prkaritiz
 image: images/prkaritiz.jpg
 link: https://www.behance.net/gallery/250921883/prkaritiz
 ---
-title: Creative Design
+title: Al Afiyat
 image: images/creative-design.jpg
 link: https://www.behance.net/gallery/250922245/_
 ---

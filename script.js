@@ -18,23 +18,21 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', resize);
     resize();
 
-    // Color palette for floating elements
     const PALETTE = [
-      'rgba(0, 245, 255, 0.25)', // cyan
-      'rgba(255, 0, 255, 0.25)', // pink
-      'rgba(0, 255, 136, 0.25)'  // green
+      'rgba(0, 245, 255, 0.25)',
+      'rgba(255, 0, 255, 0.25)',
+      'rgba(0, 255, 136, 0.25)'
     ];
 
     const elements = [];
-    const ELEM_COUNT = 15; // Koto gulo tablet/pen vashbe
+    const ELEM_COUNT = 15;
 
-    // Elements generate kora hocche
     for (let i = 0; i < ELEM_COUNT; i++) {
       elements.push({
         x: Math.random() * W,
         y: Math.random() * H,
         size: 25 + Math.random() * 35,
-        speedY: -(0.2 + Math.random() * 0.6), // upore vashbe
+        speedY: -(0.2 + Math.random() * 0.6),
         speedX: (Math.random() - 0.5) * 0.5,
         angle: Math.random() * Math.PI * 2,
         rotSpeed: (Math.random() - 0.5) * 0.015,
@@ -43,17 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Tablet draw korar function
     function drawTablet(ctx, size) {
-      // Main body
       ctx.beginPath();
       ctx.roundRect(-size, -size * 0.65, size * 2, size * 1.3, 6);
       ctx.stroke();
-      // Screen area
       ctx.beginPath();
       ctx.rect(-size * 0.4, -size * 0.5, size * 1.2, size * 1.0);
       ctx.stroke();
-      // Buttons on the left
       ctx.beginPath();
       ctx.arc(-size * 0.7, -size * 0.3, size * 0.08, 0, Math.PI * 2);
       ctx.arc(-size * 0.7, 0, size * 0.08, 0, Math.PI * 2);
@@ -61,33 +55,29 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fill();
     }
 
-    // Pen draw korar function
     function drawPen(ctx, size) {
       ctx.beginPath();
       ctx.moveTo(0, -size);
       ctx.lineTo(size * 0.12, -size * 0.7);
       ctx.lineTo(size * 0.12, size * 0.8);
-      ctx.lineTo(0, size); // tip
+      ctx.lineTo(0, size);
       ctx.lineTo(-size * 0.12, size * 0.8);
       ctx.lineTo(-size * 0.12, -size * 0.7);
       ctx.closePath();
       ctx.stroke();
-      // Pen button
       ctx.beginPath();
       ctx.rect(-size * 0.12, -size * 0.1, size * 0.24, size * 0.3);
       ctx.fill();
     }
 
-    // Animation Loop
     function loop() {
       ctx.clearRect(0, 0, W, H);
-      
+
       elements.forEach(el => {
         el.x += el.speedX;
         el.y += el.speedY;
         el.angle += el.rotSpeed;
 
-        // Screen theke ber hoye gele abar onno dik theke asbe
         if (el.y + el.size < -50) el.y = H + 50;
         if (el.x > W + 50) el.x = -50;
         if (el.x < -50) el.x = W + 50;
@@ -138,18 +128,24 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(type, 600);
   })();
 
-  // ── 3. SCROLL REVEAL ──────────────────────────
+  // ── 3. SCROLL REVEAL (reusable observer) ──────
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  // Exposed so dynamically-added elements (like portfolio videos
+  // loaded from data/videos.txt) can also get the reveal animation.
+  function observeReveal(elements) {
+    elements.forEach(el => revealObserver.observe(el));
+  }
+
   (function initReveal() {
-    const items = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    items.forEach(el => io.observe(el));
+    observeReveal(document.querySelectorAll('.reveal, .reveal-left, .reveal-right'));
   })();
 
   // ── 4. COUNT UP ───────────────────────────────
@@ -258,6 +254,93 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }, 40);
     });
+  })();
+
+  // ── 9. DYNAMIC PORTFOLIO — loads from data/videos.txt ──
+  (function initPortfolio() {
+    const grid = document.getElementById('portfolio-grid');
+    if (!grid) return;
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Parses videos.txt into an array of { link, caption, badge, type }
+    function parseVideos(text) {
+      return text
+        .split(/^---\s*$/m)
+        .map(block => block.trim())
+        .filter(Boolean)
+        .map(block => {
+          const obj = {};
+          block.split('\n').forEach(rawLine => {
+            const line = rawLine.trim();
+            if (!line || line.startsWith('#')) return;
+            const idx = line.indexOf(':');
+            if (idx === -1) return;
+            const key = line.slice(0, idx).trim().toLowerCase();
+            const value = line.slice(idx + 1).trim();
+            obj[key] = value;
+          });
+          return obj;
+        })
+        .filter(v => v.link); // ignore empty/comment-only blocks
+    }
+
+    function renderCard(v, i) {
+      const orientation = (v.type || 'horizontal').toLowerCase();
+      const badge       = ['cyan', 'purple', 'green'].includes((v.badge || '').toLowerCase())
+        ? v.badge.toLowerCase() : 'cyan';
+      const caption     = escapeHtml(v.caption || '');
+      const link        = escapeHtml(v.link);
+      const revealClass = i % 2 === 0 ? 'reveal-left' : 'reveal-right';
+      const delayClass  = 'd' + ((i % 5) + 1);
+
+      const iframe = `
+        <iframe style="aspect-ratio:${orientation === 'vertical' ? '9/16' : '16/9'};${orientation === 'vertical' ? 'width:100%' : ''}"
+          src="${link}" title="${caption}" frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+
+      if (orientation === 'vertical') {
+        return `
+          <div class="shorts-center ${revealClass} ${delayClass}">
+            <div class="video-card shorts-card">
+              ${iframe}
+              <div class="video-badge"><span class="badge badge-${badge}">${caption}</span></div>
+            </div>
+          </div>`;
+      }
+
+      return `
+        <div class="video-card ${revealClass} ${delayClass}">
+          ${iframe}
+          <div class="video-badge"><span class="badge badge-${badge}">${caption}</span></div>
+        </div>`;
+    }
+
+    fetch('data/videos.txt')
+      .then(res => {
+        if (!res.ok) throw new Error('videos.txt fetch failed: ' + res.status);
+        return res.text();
+      })
+      .then(text => {
+        const videos = parseVideos(text);
+        if (!videos.length) {
+          grid.innerHTML = '<p class="loading-text">Ekhono kono video add kora hoyni. data/videos.txt e video add korun.</p>';
+          return;
+        }
+        grid.innerHTML = videos.map(renderCard).join('');
+        observeReveal(grid.querySelectorAll('.reveal, .reveal-left, .reveal-right'));
+      })
+      .catch(err => {
+        console.error(err);
+        grid.innerHTML = '<p class="loading-text">Video load korte problem hocche. data/videos.txt file thik ache kina check korun (local e test korle ekta local server chalate hobe, direct file:// theke fetch kaj korbe na).</p>';
+      });
   })();
 
 });

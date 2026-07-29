@@ -1,0 +1,43 @@
+# ============================================================
+# EKHANE DESIGN PROJECT ADD KORUN — SHUDHU EI FILE EDIT KORLEI CHOLBE
+# ============================================================
+# Protita design-er jonno ei 3ta field likhun:
+#
+#   title: Design-er nam / headline (card-e ei lekha show hobe)
+#   image: images/ folder-e apnar rakha image-r path
+#          (jemon: images/vitality.jpg — apni oi image "images" folder-e rakhben)
+#   link:  Behance (ba onno) project-er full link
+#
+# Duita design-er majhe alada line-e "---" likhun (must, na dile bug hobe)
+# "#" diye shuru kora line comment, eta ignore kora hoy
+# ============================================================
+
+title: Vitality
+image: images/vitality.jpg
+link: https://www.behance.net/gallery/250921987/vitality
+---
+title: Prkaritiz
+image: images/prkaritiz.jpg
+link: https://www.behance.net/gallery/250921883/prkaritiz
+---
+title: Creative Design
+image: images/creative-design.jpg
+link: https://www.behance.net/gallery/250922245/_
+---
+title: Pain Relief
+image: images/pain-relief.jpg
+link: https://www.behance.net/gallery/250922313/pain-Relief
+---
+title: Diabetes
+image: images/diabetes.jpg
+link: https://www.behance.net/gallery/250922373/Diabetes
+
+# ============================================================
+# NOTUN DESIGN ADD KORTE CHAILE NICHE EI FORMAT COPY-PASTE KORE
+# NIJER TITLE/IMAGE/LINK BOSHIYE DIN:
+#
+# ---
+# title: Your Design Title
+# image: images/your-image-name.jpg
+# link: https://www.behance.net/gallery/xxxxxxx/your-project
+# ============================================================

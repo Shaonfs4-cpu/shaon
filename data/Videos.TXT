@@ -27,7 +27,12 @@ caption: Recent Project
 badge: purple
 type: horizontal
 ---
-link: https://www.youtube.com/embed/Wcc_s28CcY8?si=vzgBPvjCfX7mrtXT
+link: https://youtube.com/shorts/K61ZntWux4g?si=Im52XthOdgTd-9Ld
+caption: Talking Head / Shorts
+badge: green
+type: vertical
+---
+link: https://youtube.com/shorts/8saKlHOJK2c?si=uTvhTD9V5zMLHHgv
 caption: Talking Head / Shorts
 badge: green
 type: vertical

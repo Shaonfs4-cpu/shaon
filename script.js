@@ -323,11 +323,37 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>`;
     }
 
-    fetch('data/videos.txt')
-      .then(res => {
-        if (!res.ok) throw new Error('videos.txt fetch failed: ' + res.status);
-        return res.text();
-      })
+    // File name / capitalization niye jate baar baar problem na hoy,
+    // ei shob possible path/case try kora hocche — jeta pabe shetai use hobe.
+    const CANDIDATE_PATHS = [
+      'data/videos.txt',
+      'data/Videos.txt',
+      'data/Videos.TXT',
+      'data/videos.TXT',
+      'Data/videos.txt',
+      'Data/Videos.txt',
+      'Data/Videos.TXT',
+      'videos.txt',
+      'Videos.txt',
+      'Videos.TXT'
+    ];
+
+    async function fetchVideosFile() {
+      for (const path of CANDIDATE_PATHS) {
+        try {
+          const res = await fetch(path, { cache: 'no-store' });
+          if (res.ok) {
+            const text = await res.text();
+            return text;
+          }
+        } catch (e) {
+          // eta path e file nei, porerta try korbe
+        }
+      }
+      throw new Error('Kono candidate path e videos file paoya jayni: ' + CANDIDATE_PATHS.join(', '));
+    }
+
+    fetchVideosFile()
       .then(text => {
         const videos = parseVideos(text);
         if (!videos.length) {
@@ -339,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(err => {
         console.error(err);
-        grid.innerHTML = '<p class="loading-text">Video load korte problem hocche. data/videos.txt file thik ache kina check korun (local e test korle ekta local server chalate hobe, direct file:// theke fetch kaj korbe na).</p>';
+        grid.innerHTML = '<p class="loading-text">Video load korte problem hocche. "data" folder-e videos.txt file ache kina, ar file-e content thik ache kina check korun (local e test korle ekta local server lagbe, direct file:// theke fetch kaj korbe na).</p>';
       });
   })();
 

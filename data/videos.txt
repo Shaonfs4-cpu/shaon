@@ -27,13 +27,23 @@ caption: Recent Project
 badge: purple
 type: horizontal
 ---
-link: https://www.youtube.com/embed/hChGSo3NVGk?si=Vp2UOeHWMCIgHvVw
-caption: UCG
+link: https://www.youtube.com/embed/hChGSo3NVGk?si=1Q0ZbV240CJMFFiU
+caption: Recent Project
+badge: purple
+type: horizontal
+---
+link: https://www.youtube.com/embed/K61ZntWux4g?rel=0
+caption: Talking Head
 badge: green
 type: vertical
 ---
-link: https://youtube.com/shorts/8saKlHOJK2c?si=uTvhTD9V5zMLHHgv
-caption: Talking Head / Shorts
+link: https://www.youtube.com/embed/bJTlAYoC6Y4?rel=0
+caption: Talking Head 
+badge: green
+type: vertical
+---
+link: https://www.youtube.com/embed/8saKlHOJK2c?rel=0
+caption: Talking Head Medical 
 badge: green
 type: vertical
 

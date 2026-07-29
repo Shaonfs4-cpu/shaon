@@ -1,0 +1,44 @@
+# ============================================================
+# EKHANE VIDEO ADD KORUN — SHUDHU EI FILE EDIT KORLEI CHOLBE
+# ============================================================
+# Protita video-r jonno ei 4ta field likhun:
+#
+#   link:    YouTube embed link (share -> embed link, "embed/xxxx" thakte hobe)
+#   caption: Video-r nam / caption (eta badge hisebe show hobe)
+#   badge:   cyan / purple / green  (rong)
+#   type:    horizontal / vertical  (Shorts / Reels hole "vertical" dibe)
+#
+# Duita video-r majhe alada line-e "---" likhun (must, na dile bug hobe)
+# "#" diye shuru kora line comment, eta ignore kora hoy, likhte paren jekhane khushi
+# ============================================================
+
+link: https://www.youtube.com/embed/4v07hhgM0cE?si=TQCiWs8mNq_Q4ZfU
+caption: Documentary
+badge: cyan
+type: horizontal
+---
+link: https://www.youtube.com/embed/OMNp9nLGh7Y?si=XXanxKLxWt-EBDC0
+caption: Documentary
+badge: cyan
+type: horizontal
+---
+link: https://www.youtube.com/embed/lJivusOV6uM?si=ftuVQ43HaGoqTHow
+caption: Recent Project
+badge: purple
+type: horizontal
+---
+link: https://www.youtube.com/embed/Wcc_s28CcY8?si=vzgBPvjCfX7mrtXT
+caption: Talking Head / Shorts
+badge: green
+type: vertical
+
+# ============================================================
+# NOTUN VIDEO ADD KORTE CHAILE NICHE EI FORMAT COPY-PASTE KORE
+# NIJER LINK/CAPTION BOSHIYE DIN:
+#
+# ---
+# link: https://www.youtube.com/embed/YOUR_VIDEO_ID
+# caption: Your Caption Here
+# badge: cyan
+# type: horizontal
+# ============================================================

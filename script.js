@@ -369,4 +369,105 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   })();
 
+  // ── 10. DYNAMIC DESIGN SECTION — loads from data/designs.txt ──
+  (function initDesigns() {
+    const grid = document.getElementById('design-grid');
+    if (!grid) return;
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Parses designs.txt into an array of { title, image, link }
+    function parseDesigns(text) {
+      return text
+        .split(/^---\s*$/m)
+        .map(block => block.trim())
+        .filter(Boolean)
+        .map(block => {
+          const obj = {};
+          block.split('\n').forEach(rawLine => {
+            const line = rawLine.trim();
+            if (!line || line.startsWith('#')) return;
+            const idx = line.indexOf(':');
+            if (idx === -1) return;
+            const key = line.slice(0, idx).trim().toLowerCase();
+            const value = line.slice(idx + 1).trim();
+            obj[key] = value;
+          });
+          return obj;
+        })
+        .filter(d => d.title || d.image); // ignore empty/comment-only blocks
+    }
+
+    function renderDesignCard(d, i) {
+      const title = escapeHtml(d.title || 'Untitled');
+      const link  = escapeHtml(d.link || '#');
+      const image = escapeHtml(d.image || '');
+      const delayClass = 'd' + ((i % 5) + 1);
+
+      const imageHtml = image
+        ? `<img src="${image}" alt="${title}" loading="lazy" onerror="this.closest('.design-card-image-wrap').classList.add('no-image')" />`
+        : '';
+
+      return `
+        <a href="${link}" target="_blank" class="design-card reveal ${delayClass}">
+          <div class="design-card-image-wrap">
+            ${imageHtml}
+            <div class="design-card-badge"><i class="fab fa-behance"></i></div>
+          </div>
+          <div class="design-card-info">
+            <h3>${title}</h3>
+            <span>View Project →</span>
+          </div>
+        </a>`;
+    }
+
+    // File name / capitalization niye jate problem na hoy, kichu candidate path try kora hocche.
+    const CANDIDATE_PATHS = [
+      'data/designs.txt',
+      'data/Designs.txt',
+      'data/Designs.TXT',
+      'data/designs.TXT',
+      'Data/designs.txt',
+      'Data/Designs.txt',
+      'designs.txt',
+      'Designs.txt',
+      'Designs.TXT'
+    ];
+
+    async function fetchDesignsFile() {
+      for (const path of CANDIDATE_PATHS) {
+        try {
+          const res = await fetch(path, { cache: 'no-store' });
+          if (res.ok) {
+            return await res.text();
+          }
+        } catch (e) {
+          // eta path e file nei, porerta try korbe
+        }
+      }
+      throw new Error('Kono candidate path e designs file paoya jayni: ' + CANDIDATE_PATHS.join(', '));
+    }
+
+    fetchDesignsFile()
+      .then(text => {
+        const designs = parseDesigns(text);
+        if (!designs.length) {
+          grid.innerHTML = '<p class="loading-text">Ekhono kono design add kora hoyni. data/designs.txt e design add korun.</p>';
+          return;
+        }
+        grid.innerHTML = designs.map(renderDesignCard).join('');
+        observeReveal(grid.querySelectorAll('.reveal, .reveal-left, .reveal-right'));
+      })
+      .catch(err => {
+        console.error(err);
+        grid.innerHTML = '<p class="loading-text">Design load korte problem hocche. "data" folder-e designs.txt file ache kina check korun.</p>';
+      });
+  })();
+
 });

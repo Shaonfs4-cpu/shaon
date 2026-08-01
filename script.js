@@ -256,10 +256,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
-  // ── 9. DYNAMIC PORTFOLIO — loads from data/videos.txt ──
-  (function initPortfolio() {
-    const grid = document.getElementById('portfolio-grid');
-    if (!grid) return;
+  // ── 9. DYNAMIC CONTENT — Featured Work + Portfolio + Designs ──
+  // All three sections read from the SAME data/videos.txt and
+  // data/designs.txt, fetched once here and shared, so adding a
+  // new video/design in the .txt files is the only thing needed —
+  // no HTML/JS edits required anywhere.
+  (function initDynamicContent() {
+    const featuredGrid  = document.getElementById('featured-grid');
+    const portfolioGrid = document.getElementById('portfolio-grid');
+    const designGrid    = document.getElementById('design-grid');
 
     function escapeHtml(str) {
       return String(str)
@@ -269,8 +274,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .replace(/"/g, '&quot;');
     }
 
-    // Parses videos.txt into an array of { link, caption, badge, type }
-    function parseVideos(text) {
+    // Generic "---" separated block parser, used for both txt files.
+    function parseBlocks(text) {
       return text
         .split(/^---\s*$/m)
         .map(block => block.trim())
@@ -287,17 +292,47 @@ document.addEventListener('DOMContentLoaded', () => {
             obj[key] = value;
           });
           return obj;
-        })
-        .filter(v => v.link); // ignore empty/comment-only blocks
+        });
     }
 
-    function renderCard(v, i) {
+    function parseVideos(text) {
+      return parseBlocks(text).filter(v => v.link);
+    }
+
+    function parseDesigns(text) {
+      return parseBlocks(text).filter(d => d.title || d.image);
+    }
+
+    function fetchFirstAvailable(paths) {
+      return paths.reduce(
+        (promise, path) => promise.catch(() =>
+          fetch(path, { cache: 'no-store' }).then(res => {
+            if (!res.ok) throw new Error('not ok');
+            return res.text();
+          })
+        ),
+        Promise.reject()
+      );
+    }
+
+    const VIDEOS_PATHS = [
+      'data/videos.txt', 'data/Videos.txt', 'data/Videos.TXT', 'data/videos.TXT',
+      'Data/videos.txt', 'Data/Videos.txt', 'Data/Videos.TXT',
+      'videos.txt', 'Videos.txt', 'Videos.TXT'
+    ];
+    const DESIGNS_PATHS = [
+      'data/designs.txt', 'data/Designs.txt', 'data/Designs.TXT', 'data/designs.TXT',
+      'Data/designs.txt', 'Data/Designs.txt',
+      'designs.txt', 'Designs.txt', 'Designs.TXT'
+    ];
+
+    function renderVideoCard(v, i, { compact = false } = {}) {
       const orientation = (v.type || 'horizontal').toLowerCase();
       const badge       = ['cyan', 'purple', 'green'].includes((v.badge || '').toLowerCase())
         ? v.badge.toLowerCase() : 'cyan';
       const caption     = escapeHtml(v.caption || '');
       const link        = escapeHtml(v.link);
-      const revealClass = i % 2 === 0 ? 'reveal-left' : 'reveal-right';
+      const revealClass = compact ? 'reveal' : (i % 2 === 0 ? 'reveal-left' : 'reveal-right');
       const delayClass  = 'd' + ((i % 5) + 1);
 
       const iframe = `
@@ -323,87 +358,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>`;
     }
 
-    // File name / capitalization niye jate baar baar problem na hoy,
-    // ei shob possible path/case try kora hocche — jeta pabe shetai use hobe.
-    const CANDIDATE_PATHS = [
-      'data/videos.txt',
-      'data/Videos.txt',
-      'data/Videos.TXT',
-      'data/videos.TXT',
-      'Data/videos.txt',
-      'Data/Videos.txt',
-      'Data/Videos.TXT',
-      'videos.txt',
-      'Videos.txt',
-      'Videos.TXT'
-    ];
-
-    async function fetchVideosFile() {
-      for (const path of CANDIDATE_PATHS) {
-        try {
-          const res = await fetch(path, { cache: 'no-store' });
-          if (res.ok) {
-            const text = await res.text();
-            return text;
-          }
-        } catch (e) {
-          // eta path e file nei, porerta try korbe
-        }
-      }
-      throw new Error('Kono candidate path e videos file paoya jayni: ' + CANDIDATE_PATHS.join(', '));
-    }
-
-    fetchVideosFile()
-      .then(text => {
-        const videos = parseVideos(text);
-        if (!videos.length) {
-          grid.innerHTML = '<p class="loading-text">Ekhono kono video add kora hoyni. data/videos.txt e video add korun.</p>';
-          return;
-        }
-        grid.innerHTML = videos.map(renderCard).join('');
-        observeReveal(grid.querySelectorAll('.reveal, .reveal-left, .reveal-right'));
-      })
-      .catch(err => {
-        console.error(err);
-        grid.innerHTML = '<p class="loading-text">Video load korte problem hocche. "data" folder-e videos.txt file ache kina, ar file-e content thik ache kina check korun (local e test korle ekta local server lagbe, direct file:// theke fetch kaj korbe na).</p>';
-      });
-  })();
-
-  // ── 10. DYNAMIC DESIGN SECTION — loads from data/designs.txt ──
-  (function initDesigns() {
-    const grid = document.getElementById('design-grid');
-    if (!grid) return;
-
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    // Parses designs.txt into an array of { title, image, link }
-    function parseDesigns(text) {
-      return text
-        .split(/^---\s*$/m)
-        .map(block => block.trim())
-        .filter(Boolean)
-        .map(block => {
-          const obj = {};
-          block.split('\n').forEach(rawLine => {
-            const line = rawLine.trim();
-            if (!line || line.startsWith('#')) return;
-            const idx = line.indexOf(':');
-            if (idx === -1) return;
-            const key = line.slice(0, idx).trim().toLowerCase();
-            const value = line.slice(idx + 1).trim();
-            obj[key] = value;
-          });
-          return obj;
-        })
-        .filter(d => d.title || d.image); // ignore empty/comment-only blocks
-    }
-
     function renderDesignCard(d, i) {
       const title = escapeHtml(d.title || 'Untitled');
       const link  = escapeHtml(d.link || '#');
@@ -427,47 +381,70 @@ document.addEventListener('DOMContentLoaded', () => {
         </a>`;
     }
 
-    // File name / capitalization niye jate problem na hoy, kichu candidate path try kora hocche.
-    const CANDIDATE_PATHS = [
-      'data/designs.txt',
-      'data/Designs.txt',
-      'data/Designs.TXT',
-      'data/designs.TXT',
-      'Data/designs.txt',
-      'Data/Designs.txt',
-      'designs.txt',
-      'Designs.txt',
-      'Designs.TXT'
-    ];
+    // ---- Featured Work (top of page): first horizontal + first vertical
+    // video, plus the first 1-2 designs ----
+    function renderFeatured(videos, designs) {
+      if (!featuredGrid) return;
 
-    async function fetchDesignsFile() {
-      for (const path of CANDIDATE_PATHS) {
-        try {
-          const res = await fetch(path, { cache: 'no-store' });
-          if (res.ok) {
-            return await res.text();
-          }
-        } catch (e) {
-          // eta path e file nei, porerta try korbe
-        }
+      const horizontal = videos.find(v => (v.type || 'horizontal').toLowerCase() !== 'vertical');
+      const vertical    = videos.find(v => (v.type || '').toLowerCase() === 'vertical');
+      const topDesigns  = designs.slice(0, 2);
+
+      if (!horizontal && !vertical && !topDesigns.length) {
+        featuredGrid.innerHTML = '<p class="loading-text">No featured work yet — add items to data/videos.txt or data/designs.txt.</p>';
+        return;
       }
-      throw new Error('Kono candidate path e designs file paoya jayni: ' + CANDIDATE_PATHS.join(', '));
+
+      let html = '';
+      html += `<div class="featured-video-wrap">${horizontal ? renderVideoCard(horizontal, 0, { compact: true }) : ''}</div>`;
+      html += `<div class="featured-portrait-wrap">${vertical ? renderVideoCard(vertical, 1, { compact: true }) : ''}</div>`;
+      html += `<div class="featured-designs-wrap">${topDesigns.map(renderDesignCard).join('')}</div>`;
+
+      featuredGrid.innerHTML = html;
+      observeReveal(featuredGrid.querySelectorAll('.reveal, .reveal-left, .reveal-right'));
     }
 
-    fetchDesignsFile()
-      .then(text => {
-        const designs = parseDesigns(text);
-        if (!designs.length) {
-          grid.innerHTML = '<p class="loading-text">Ekhono kono design add kora hoyni. data/designs.txt e design add korun.</p>';
-          return;
-        }
-        grid.innerHTML = designs.map(renderDesignCard).join('');
-        observeReveal(grid.querySelectorAll('.reveal, .reveal-left, .reveal-right'));
-      })
+    function renderPortfolio(videos) {
+      if (!portfolioGrid) return;
+      if (!videos.length) {
+        portfolioGrid.innerHTML = '<p class="loading-text">Ekhono kono video add kora hoyni. data/videos.txt e video add korun.</p>';
+        return;
+      }
+      portfolioGrid.innerHTML = videos.map((v, i) => renderVideoCard(v, i)).join('');
+      observeReveal(portfolioGrid.querySelectorAll('.reveal, .reveal-left, .reveal-right'));
+    }
+
+    function renderDesigns(designs) {
+      if (!designGrid) return;
+      if (!designs.length) {
+        designGrid.innerHTML = '<p class="loading-text">Ekhono kono design add kora hoyni. data/designs.txt e design add korun.</p>';
+        return;
+      }
+      designGrid.innerHTML = designs.map(renderDesignCard).join('');
+      observeReveal(designGrid.querySelectorAll('.reveal, .reveal-left, .reveal-right'));
+    }
+
+    const videosPromise = fetchFirstAvailable(VIDEOS_PATHS)
+      .then(parseVideos)
       .catch(err => {
-        console.error(err);
-        grid.innerHTML = '<p class="loading-text">Design load korte problem hocche. "data" folder-e designs.txt file ache kina check korun.</p>';
+        console.error('videos.txt load failed:', err);
+        if (portfolioGrid) portfolioGrid.innerHTML = '<p class="loading-text">Video load korte problem hocche. "data" folder-e videos.txt file ache kina check korun.</p>';
+        return [];
       });
+
+    const designsPromise = fetchFirstAvailable(DESIGNS_PATHS)
+      .then(parseDesigns)
+      .catch(err => {
+        console.error('designs.txt load failed:', err);
+        if (designGrid) designGrid.innerHTML = '<p class="loading-text">Design load korte problem hocche. "data" folder-e designs.txt file ache kina check korun.</p>';
+        return [];
+      });
+
+    Promise.all([videosPromise, designsPromise]).then(([videos, designs]) => {
+      renderFeatured(videos, designs);
+      renderPortfolio(videos);
+      renderDesigns(designs);
+    });
   })();
 
 });

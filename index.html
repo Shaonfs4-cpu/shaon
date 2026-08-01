@@ -22,12 +22,22 @@
   <a href="#hero" class="nav-logo">SIS<span>.</span></a>
   <ul class="nav-links">
     <li><a href="#hero">Home</a></li>
+    <li><a href="#featured">Work</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#skills">Skills</a></li>
     <li><a href="#portfolio">Portfolio</a></li>
     <li><a href="#design">Design</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+
+  <!-- Contact info visible from the moment the page loads -->
+  <div class="nav-contact">
+    <a href="mailto:shaon.fs4@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+    <a href="https://wa.link/497so2" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://www.linkedin.com/in/shariful-islam-shaon2000" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+    <a href="https://www.facebook.com/share/1D98B3kd8D/" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+  </div>
+
   <div class="nav-burger" aria-label="Toggle menu">
     <span></span><span></span><span></span>
   </div>
@@ -51,13 +61,34 @@
     </p>
 
     <div class="hero-btns">
-      <a href="#portfolio" class="btn-neon primary">View Work</a>
+      <a href="#featured" class="btn-neon primary">View Work</a>
       <a href="#contact" class="btn-neon outline">Contact Me</a>
     </div>
   </div>
 
   <div class="scroll-hint">SCROLL</div>
 </header>
+
+<!--
+  FEATURED WORK — quick-look strip right after the hero, so visitors
+  see actual work (1 horizontal video + 1 portrait video + 1-2 designs)
+  without scrolling all the way down to the full Portfolio section.
+
+  This is fully dynamic: script.js picks the FIRST horizontal video,
+  the FIRST vertical (portrait) video from data/videos.txt, and the
+  first 1-2 entries from data/designs.txt. Add new items normally in
+  those files — whichever is listed first becomes the featured item.
+-->
+<section id="featured">
+  <div class="section-header reveal">
+    <p class="section-label">// quick look</p>
+    <h2 class="section-title">Featured Work</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="featured-grid" id="featured-grid">
+    <p class="loading-text">Loading featured work...</p>
+  </div>
+</section>
 
 <section id="stats">
   <div class="stats-grid">
